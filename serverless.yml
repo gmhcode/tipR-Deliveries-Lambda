@@ -1,0 +1,104 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: tipr-deliveries
+
+custom:
+  settings:
+    DELIVERY_TABLE: deliveries
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment: ${self:custom.settings}
+  profile: serverless-admin
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DELIVERY_TABLE}"
+
+
+functions:
+  createDelivery:
+    handler: handler.createDelivery
+    events:
+    - http:
+        path: /delivery
+        method: post
+  getAllDeliveries:
+      handler: handler.getAllDeliveries
+      events:
+      - http:
+          path: /deliveries
+          method: get
+  getDeliveries:
+      handler: handler.getDeliveries
+      events:
+      - http:
+          path: /deliveries/{number}
+          method: get
+  getDelivery:
+      handler: handler.getDelivery
+      events:
+      - http:
+          path: /delivery/{userID}/{id}
+          method: get
+  updateDelivery:
+      handler: handler.updateDelivery
+      events:
+      - http:
+          path: /delivery/{userID}/{id}
+          method: put
+  deleteDelivery:
+      handler: handler.deleteDelivery
+      events:
+      - http:
+          path: /delivery/{userID}/{id}
+          method: delete
+
+
+resources:
+  Resources:
+    DeliveryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "userID"
+          AttributeType: "S"
+        - AttributeName: "id"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "userID"
+          KeyType: "HASH"
+        - AttributeName: "id"
+          KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.settings.DELIVERY_TABLE}
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
