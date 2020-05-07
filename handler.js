@@ -44,7 +44,9 @@ module.exports.createDelivery = (event, context, callback) => {
     id: reqBody.id,
     isFinished: reqBody.isFinished,
     tripId: reqBody.tripId,
-    date: reqBody.date
+    date: reqBody.date,
+    latitude: reqBody.latitude,
+    longitude: reqBody.longitude
   }
 
   return db.put({
@@ -141,6 +143,7 @@ module.exports.getDelivery = (event, context, callback) => {
 
 module.exports.updateDelivery = (event, context, callback) => {
   const id = event.pathParameters.id
+  console.log("HERE IT IS", event)
   const userID = event.pathParameters.userID
   const body = JSON.parse(event.body)
   const address = body.address
@@ -149,6 +152,8 @@ module.exports.updateDelivery = (event, context, callback) => {
   const locationId = body.locationId
   const tipAmount = body.tipAmount
   const tripId = body.tripId
+  const latitude = body.latitude
+  const longitude = body.longitude
 
 
   const params = {
@@ -159,13 +164,15 @@ module.exports.updateDelivery = (event, context, callback) => {
     TableName: deliveryTable
     ,
     ConditionExpression: 'attribute_exists(id)',
-    UpdateExpression: 'set address = :a, isFinished = :f, locationId = :l, tipAmount = :t, tripId = :p',
+    UpdateExpression: 'set address = :a, isFinished = :f, locationId = :l, tipAmount = :t, tripId = :p, latitude = :i, longitude =:g',
     ExpressionAttributeValues: {
       ':a': address,
       ':f': isFinished,
       ':l': locationId,
       ':t': tipAmount,
-      ':p': tripId
+      ':p': tripId,
+      ':i': latitude,
+      ':g': longitude
     },
     ReturnValue: 'ALL_NEW'
   }
