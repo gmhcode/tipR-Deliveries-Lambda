@@ -32,9 +32,6 @@ function sortByDate(a, b) {
 module.exports.createDelivery = (event, context, callback) => {
   const reqBody = JSON.parse(event.body)
 
-  // if (!reqBody.title || reqBody.title.trim() === '' || !reqBody.body || reqBody.body.trim() === '') {
-  //   return callback(null, response(400, { error: 'Post must have a title and a body and they must not be empty' }))
-  // }
 
   const delivery = {
     userID: reqBody.userID,
@@ -108,6 +105,7 @@ module.exports.getDeliveries = (event, context, callback) => {
 .##....##..##..........##.......##....##..##..##...###.##....##..##.......##..........##.....##.##.......##........##....##.##...##.......##....##.....##...
 ..######...########....##........######..####.##....##..######...########.########....########..########.########.####....###....########.##.....##....##...
 */
+
 module.exports.getDelivery = (event, context, callback) => {
   const userID = event.pathParameters.userID;
   const id = event.pathParameters.id
@@ -123,7 +121,6 @@ module.exports.getDelivery = (event, context, callback) => {
   return db.get(params).promise().then(res => {
 
     if (res.Item) callback(null, response(200, res.Item))
-    // { error: 'Post Not Found' }
     else callback(null, response(404, res))
   })
     .catch(err => callback(null, response(err.statusCode, err)))
