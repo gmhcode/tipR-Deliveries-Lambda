@@ -120,11 +120,12 @@ module.exports.getDelivery = (event, context, callback) => {
     ExpressionAttributeValues: {
       ":a": userID
     },
-    FilterExpression: "userID = :a",
+    KeyConditionExpression: "userID = :a",
+    // FilterExpression: "userID = :a",
     ProjectionExpression: "#ST, #AT",
     TableName: deliveryTable
   };
-  return db.scan(params).promise()
+  return db.query(params).promise()
     .then(res => {
       callback(null, response(200, res))
     }).catch(err => callback(null, response(err.statusCode, err)))
