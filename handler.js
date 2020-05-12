@@ -107,25 +107,28 @@ module.exports.getDeliveries = (event, context, callback) => {
 */
 
 module.exports.getDelivery = (event, context, callback) => {
-  const userID = event.pathParameters.userID;
+  console.log(event)
+  const userID = event.pathParameters.userID
   const id = event.pathParameters.id
 
-  const params = {
-    Key: {
-      userID: userID,
-      id: id
+  // 7F982E1F - 7FCB - 487B - B4EB - 4384059CCF50
+  var params = {
+    ExpressionAttributeNames: {
+      "#AT": "userID",
+      "#ST": "tipAmount"
     },
+    ExpressionAttributeValues: {
+      ":a": userID
+    },
+    FilterExpression: "userID = :a",
+    ProjectionExpression: "#ST, #AT",
     TableName: deliveryTable
-
-  }
-  return db.get(params).promise().then(res => {
-
-    if (res.Item) callback(null, response(200, res.Item))
-    else callback(null, response(404, res))
-  })
-    .catch(err => callback(null, response(err.statusCode, err)))
+  };
+  return db.scan(params).promise()
+    .then(res => {
+      callback(null, response(200, res))
+    }).catch(err => callback(null, response(err.statusCode, err)))
 }
-
 
 /*
 .##.....##.########..########.....###....########.########....########..########.##.......####.##.....##.########.########..##....##
@@ -208,6 +211,51 @@ module.exports.deleteDelivery = (event, context, callback) => {
 
 
 
+/* This example scans the entire Music table, and then narrows the results to songs by the artist "No One You Know". For each item, only the album title and song title are returned. */
+
+// var params = {
+//   ExpressionAttributeNames: {
+//     "#AT": "id",
+//     "#ST": "tipAmount"
+//   },
+//   ExpressionAttributeValues: {
+//     ":a": userID
+//   },
+//   FilterExpression: "userID = :a",
+//   ProjectionExpression: "#ST, #AT",
+//   TableName: deliveryTable
+// };
+// dynamodb.scan(params, function (err, data) {
+//   if (err) console.log(err, err.stack); // an error occurred
+//   else console.log(data);           // successful response
+//   /*
+//   data = {
+//    ConsumedCapacity: {
+//    }, 
+//    Count: 2, 
+//    Items: [
+//       {
+//      "AlbumTitle": {
+//        S: "Somewhat Famous"
+//       }, 
+//      "SongTitle": {
+//        S: "Call Me Today"
+//       }
+//     }, 
+//       {
+//      "AlbumTitle": {
+//        S: "Blue Sky Blues"
+//       }, 
+//      "SongTitle": {
+//        S: "Scared of My Shadow"
+//       }
+//     }
+//    ], 
+//    ScannedCount: 3
+//   }
+//   */
+// });
+
 
 
 /*
@@ -228,19 +276,19 @@ module.exports.deleteDelivery = (event, context, callback) => {
 //   //   },
 //   //   TableName: postsTable
 //   // }
-//   var params = {
-//     TableName: postsTable,
-//     ProjectionExpression: "title",
-//     FilterExpression: "title between :letter1 and :letter2",
-//     // ExpressionAttributeNames: {
-//     //   "#yr": "year"
-//     // },
-//     ExpressionAttributeValues: {
-//       // ":yyyy": 1992,
-//       ":letter1": "5",
-//       ":letter2": "7"
-//     }
-//   };
+  // var params = {
+  //   TableName: postsTable,
+  //   ProjectionExpression: "userID",
+  //   FilterExpression: "title between :letter1 and :letter2",
+  //   // ExpressionAttributeNames: {
+  //   //   "#yr": "year"
+  //   // },
+  //   ExpressionAttributeValues: {
+  //     ":userID": userID,
+  //     // ":letter1": "5",
+  //     // ":letter2": "7"
+  //   }
+  // };
 //   return db.scan(params).promise().then(res => {
 
 //     if (res.Item) callback(null, response(200, res.Item))
