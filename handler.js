@@ -111,18 +111,27 @@ module.exports.getDelivery = (event, context, callback) => {
   const userID = event.pathParameters.userID
   const id = event.pathParameters.id
 
+
   // 7F982E1F - 7FCB - 487B - B4EB - 4384059CCF50
   var params = {
     ExpressionAttributeNames: {
-      "#AT": "userID",
-      "#ST": "tipAmount"
+      "#UT": "userID",
+      "#TT": "tipAmount",
+      "#AT": "address",
+      "#LD": "locationId",
+      "#IT": "id",
+      "#FT": "isFinished",
+      "#PT": "tripId",
+      "#DT": "date",
+      "#LT": "latitude",
+      "#GD": "longitude"
     },
     ExpressionAttributeValues: {
       ":a": userID
     },
     KeyConditionExpression: "userID = :a",
     // FilterExpression: "userID = :a",
-    ProjectionExpression: "#ST, #AT",
+    ProjectionExpression: "#UT, #TT, #AT, #LD, #IT, #FT, #PT, #DT, #LT, #GD",
     TableName: deliveryTable
   };
   return db.query(params).promise()
